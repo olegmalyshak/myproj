@@ -1,0 +1,162 @@
+[
+    {
+        "label": "BaseSettings",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "SettingsConfigDict",
+        "importPath": "pydantic_settings",
+        "description": "pydantic_settings",
+        "isExtraImport": true,
+        "detail": "pydantic_settings",
+        "documentation": {}
+    },
+    {
+        "label": "ClientSession",
+        "importPath": "aiohttp",
+        "description": "aiohttp",
+        "isExtraImport": true,
+        "detail": "aiohttp",
+        "documentation": {}
+    },
+    {
+        "label": "alru_cache",
+        "importPath": "async_lru",
+        "description": "async_lru",
+        "isExtraImport": true,
+        "detail": "async_lru",
+        "documentation": {}
+    },
+    {
+        "label": "settings",
+        "importPath": "src.config",
+        "description": "src.config",
+        "isExtraImport": true,
+        "detail": "src.config",
+        "documentation": {}
+    },
+    {
+        "label": "CMCHTTPClient",
+        "importPath": "src.http_client",
+        "description": "src.http_client",
+        "isExtraImport": true,
+        "detail": "src.http_client",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "APIRouter",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "CORSMiddleware",
+        "importPath": "fastapi.middleware.cors",
+        "description": "fastapi.middleware.cors",
+        "isExtraImport": true,
+        "detail": "fastapi.middleware.cors",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "importPath": "src.router",
+        "description": "src.router",
+        "isExtraImport": true,
+        "detail": "src.router",
+        "documentation": {}
+    },
+    {
+        "label": "cmc_client",
+        "importPath": "src.init",
+        "description": "src.init",
+        "isExtraImport": true,
+        "detail": "src.init",
+        "documentation": {}
+    },
+    {
+        "label": "Settings",
+        "kind": 6,
+        "importPath": "backend.src.config",
+        "description": "backend.src.config",
+        "peekOfCode": "class Settings(BaseSettings):\n    CMC_API_KEY: str\n    model_config = SettingsConfigDict(env_file=\".env\")\nsettings = Settings()",
+        "detail": "backend.src.config",
+        "documentation": {}
+    },
+    {
+        "label": "settings",
+        "kind": 5,
+        "importPath": "backend.src.config",
+        "description": "backend.src.config",
+        "peekOfCode": "settings = Settings()",
+        "detail": "backend.src.config",
+        "documentation": {}
+    },
+    {
+        "label": "HTTPClient",
+        "kind": 6,
+        "importPath": "backend.src.http_client",
+        "description": "backend.src.http_client",
+        "peekOfCode": "class HTTPClient:\n    def __init__(self, base_url: str, api_key: str):\n        self._session = ClientSession(\n            base_url=base_url,\n            headers={\n                'X-CMC_PRO_API_KEY': api_key,\n            }\n        )\nclass CMCHTTPClient(HTTPClient):\n    @alru_cache",
+        "detail": "backend.src.http_client",
+        "documentation": {}
+    },
+    {
+        "label": "CMCHTTPClient",
+        "kind": 6,
+        "importPath": "backend.src.http_client",
+        "description": "backend.src.http_client",
+        "peekOfCode": "class CMCHTTPClient(HTTPClient):\n    @alru_cache\n    async def get_listings(self):\n        async with self._session.get(\"/v1/cryptocurrency/listings/latest\") as resp:\n            result = await resp.json()\n            return result[\"data\"]\n    @alru_cache\n    async def get_currency(self, currency_id: int):\n        async with self._session.get(\n            \"/v2/cryptocurrency/quotes/latest\",",
+        "detail": "backend.src.http_client",
+        "documentation": {}
+    },
+    {
+        "label": "cmc_client",
+        "kind": 5,
+        "importPath": "backend.src.init",
+        "description": "backend.src.init",
+        "peekOfCode": "cmc_client = CMCHTTPClient(\n    base_url=\"https://pro-api.coinmarketcap.com\",\n    api_key=settings.CMC_API_KEY\n)",
+        "detail": "backend.src.init",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "backend.src.main",
+        "description": "backend.src.main",
+        "peekOfCode": "app = FastAPI()\napp.include_router(router_crypto)\norigins = [\n    \"http://localhost:5173\",\n    \"http://127.0.0.1:5173\",\n]\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=origins,\n    allow_credentials=True,",
+        "detail": "backend.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "origins",
+        "kind": 5,
+        "importPath": "backend.src.main",
+        "description": "backend.src.main",
+        "peekOfCode": "origins = [\n    \"http://localhost:5173\",\n    \"http://127.0.0.1:5173\",\n]\napp.add_middleware(\n    CORSMiddleware,\n    allow_origins=origins,\n    allow_credentials=True,\n    allow_methods=[\"*\"],\n    allow_headers=[\"*\"],",
+        "detail": "backend.src.main",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "kind": 5,
+        "importPath": "backend.src.router",
+        "description": "backend.src.router",
+        "peekOfCode": "router = APIRouter(\n    prefix=\"/cryptocurrencies\"\n)\n@router.get(\"\")\nasync def get_cryptocurrencies():\n    return await cmc_client.get_listings()\n@router.get(\"/{currency_id}\")\nasync def get_cryptocurrency(currency_id: int):\n    return await cmc_client.get_currency(currency_id)",
+        "detail": "backend.src.router",
+        "documentation": {}
+    }
+]
